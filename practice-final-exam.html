@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Final Exam — Fundamental English Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF7;
+    --card: #FFFFFF;
+    --text: #1A1A1A;
+    --muted: #6B6B6B;
+    --accent: #2563EB;
+    --accent-light: #EFF6FF;
+    --correct: #16A34A;
+    --correct-bg: #F0FDF4;
+    --wrong: #DC2626;
+    --wrong-bg: #FEF2F2;
+    --border: #E5E5E5;
+    --section-bg: #F1F5F9;
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%);
+    color: white;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  .header h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .header p {
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  .progress-bar-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563EB, #16A34A);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  .section-banner {
+    background: var(--section-bg);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 36px 0 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .section-banner h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .section-banner p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+  }
+  .question-card.answered-correct { border-color: var(--correct); }
+  .question-card.answered-wrong { border-color: var(--wrong); }
+
+  .q-number {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .passage-box {
+    background: #F8F9FA;
+    border-left: 3px solid #CBD5E1;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    border-radius: 0 6px 6px 0;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #334155;
+  }
+
+  .q-text {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .option-btn:hover:not(.locked) {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+  .option-btn .opt-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #F1F5F9;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+  }
+  .option-btn:hover:not(.locked) .opt-letter {
+    background: var(--accent);
+    color: white;
+  }
+  .option-btn.selected-correct {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+  }
+  .option-btn.selected-correct .opt-letter {
+    background: var(--correct);
+    color: white;
+  }
+  .option-btn.selected-wrong {
+    border-color: var(--wrong);
+    background: var(--wrong-bg);
+  }
+  .option-btn.selected-wrong .opt-letter {
+    background: var(--wrong);
+    color: white;
+  }
+  .option-btn.reveal-correct {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+  }
+  .option-btn.reveal-correct .opt-letter {
+    background: var(--correct);
+    color: white;
+  }
+  .option-btn.locked { cursor: default; opacity: 0.7; }
+  .option-btn.selected-correct.locked,
+  .option-btn.selected-wrong.locked,
+  .option-btn.reveal-correct.locked { opacity: 1; }
+
+  .feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: var(--correct-bg); color: var(--correct); }
+  .feedback.wrong { background: var(--wrong-bg); color: var(--wrong); }
+
+  .results-panel {
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    margin-top: 40px;
+    display: none;
+  }
+  .results-panel.show { display: block; }
+  .results-panel h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  .score-big {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 12px 0;
+  }
+  .score-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .score-item {
+    text-align: center;
+  }
+  .score-item .label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .score-item .val {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .reset-btn {
+    margin-top: 24px;
+    padding: 12px 32px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .reset-btn:hover { background: #1D4ED8; }
+
+  .ext-note {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    color: #92400E;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.5rem; }
+    .question-card { padding: 18px; }
+    .score-breakdown { gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Practice Final Exam</h1>
+  <p>Fundamental English Reading — Thaksin University (MuSE)</p>
+</div>
+
+<div class="progress-bar-container">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 23</div>
+</div>
+
+<div class="container" id="quizContainer"></div>
+
+<script>
+// ── Quiz Data (reshuffled for balanced answer positions) ──
+// Target distribution for 23 items: ~6 each of 1,2,3,4
+// New distribution: 1→6, 2→6, 3→6, 4→5
+
+const sections = [
+  {
+    title: "Section 1 — Vocabulary in Context",
+    instruction: "Read each passage. Choose the answer closest in meaning to the underlined word.",
+    questions: [
+      // Q1: correct = "very detailed and exact" → pos 3
+      { id: 1,
+        passage: "Before submitting the research report, Maria carefully checked every section for mistakes. She corrected several grammar errors and replaced unclear sentences with more precise explanations. After reviewing the entire document twice, she finally uploaded the final version.",
+        question: 'The word <u>precise</u> most nearly means:',
+        options: ["confusing and difficult", "easy to ignore", "very detailed and exact", "written very quickly"],
+        correct: 2 },
+      // Q2: correct = "went beyond a limit" → pos 4
+      { id: 2,
+        passage: "The conference organizers expected around one hundred participants, but the number of people who registered was far greater than they had predicted. Because attendance exceeded expectations, the organizers had to move the event to a larger room.",
+        question: 'The word <u>exceeded</u> most nearly means:',
+        options: ["arrived late", "caused a delay", "remained unchanged", "went beyond a limit"],
+        correct: 3 },
+      // Q3: correct = "similar or stable over time" → pos 1
+      { id: 3,
+        passage: "The scientist conducted several experiments to test the new theory. Each test produced slightly different results, but the overall pattern remained consistent. Because the evidence was reliable, the research team decided to publish their findings.",
+        question: 'The word <u>consistent</u> most nearly means:',
+        options: ["similar or stable over time", "completely random", "impossible to repeat", "very difficult to measure"],
+        correct: 0 },
+      // Q4: correct = "an agreement where each side accepts less" → pos 2
+      { id: 4,
+        passage: "After several hours of discussion, the committee reached a compromise that satisfied most members. Although no one received everything they wanted, the final agreement allowed the project to continue.",
+        question: 'The word <u>compromise</u> most nearly means:',
+        options: ["a public announcement", "an agreement where each side accepts less than it wanted", "a complete victory", "a long argument"],
+        correct: 1 },
+      // Q5: correct = "involving active participation" → pos 4
+      { id: 5,
+        passage: "The museum introduced an interactive exhibit that allowed visitors to explore historical events using digital displays and simulations. Because visitors could actively participate, the exhibit quickly became very popular.",
+        question: 'The word <u>interactive</u> most nearly means:',
+        options: ["extremely expensive", "difficult to understand", "designed only for children", "involving active participation"],
+        correct: 3 },
+    ]
+  },
+  {
+    title: "Section 2 — Reading Comprehension",
+    instruction: "Read the passage and answer the questions that follow.",
+    sharedPassage: "Many cities are experimenting with new forms of transportation designed to reduce traffic congestion and pollution. One increasingly popular option is the electric scooter-sharing system. In these systems, scooters are placed throughout the city and can be unlocked using a smartphone application. Riders can travel short distances and then leave the scooter at another location for the next person to use.\n\nSupporters argue that these systems help people move around cities more efficiently. However, critics point out that scooters sometimes create safety concerns when riders ignore traffic rules or leave vehicles blocking sidewalks.",
+    questions: [
+      // Q6: correct = "growth and challenges of scooter-sharing" → pos 1
+      { id: 6,
+        question: "What is the main topic of the passage?",
+        options: ["The growth and challenges of scooter-sharing systems", "The history of public transportation", "Smartphone technology development", "The environmental effects of motorcycles"],
+        correct: 0 },
+      // Q7: correct = "Through a smartphone application" → pos 2
+      { id: 7,
+        question: "How do users unlock the scooters?",
+        options: ["With a physical key", "Through a smartphone application", "By paying cash", "Using a public transportation card"],
+        correct: 1 },
+      // Q8: correct = "Riders may create safety problems" → pos 3
+      { id: 8,
+        question: "What concern do critics have?",
+        options: ["Scooters are too slow", "Scooters cost too much", "Riders may create safety problems", "Scooters increase pollution"],
+        correct: 2 },
+      // Q9: correct = "Introducing regulations to improve safety" → pos 1
+      { id: 9,
+        question: "What are governments doing about the concerns?",
+        options: ["Introducing regulations to improve safety", "Replacing scooters with buses", "Removing scooters completely", "Limiting smartphone use"],
+        correct: 0 },
+    ]
+  },
+  {
+    title: "Section 3 — Making Inferences",
+    instruction: "Read each passage and choose the best answer based on what you can reasonably infer.",
+    questions: [
+      // Q10: correct = "audience was losing interest" → pos 2
+      { id: 10,
+        passage: "During the presentation, Alex noticed several audience members checking their watches and whispering. After a moment, he skipped several slides and moved to the conclusion.",
+        question: "What can we infer?",
+        options: ["Alex planned to start again later", "Alex believed the audience was losing interest", "Alex forgot the slides", "Alex canceled the presentation"],
+        correct: 1 },
+      // Q11: correct = "library was very crowded" → pos 4
+      { id: 11,
+        passage: "When Julia arrived at the library, nearly every seat was occupied by students studying for exams. She searched several floors before finding a desk.",
+        question: "What can we infer?",
+        options: ["Julia dislikes studying", "The library was closing soon", "Students prefer studying outside", "The library was very crowded"],
+        correct: 3 },
+      // Q12: correct = "system improved customer flow" → pos 3
+      { id: 12,
+        passage: "A restaurant introduced an online reservation system. Within a few weeks, the number of customers waiting in long lines decreased significantly.",
+        question: "What can we infer?",
+        options: ["The restaurant became unpopular", "The restaurant shortened its hours", "The system improved customer flow", "Customers stopped visiting"],
+        correct: 2 },
+      // Q13: correct = "prepared carefully" → pos 2
+      { id: 13,
+        passage: "Before a competition, David reviewed the rules and practiced several strategies. When the event started, he appeared calm and confident.",
+        question: "What can we infer?",
+        options: ["David planned to leave early", "David prepared carefully for the event", "David did not care about the competition", "David forgot the rules"],
+        correct: 1 },
+      // Q14: correct = "question required careful thinking" → pos 4
+      { id: 14,
+        passage: "When the professor asked a difficult question, the classroom became silent. After a moment, one student slowly raised her hand.",
+        question: "What can we infer?",
+        options: ["Everyone already knew the answer", "The lesson ended", "The professor canceled the question", "The question required careful thinking"],
+        correct: 3 },
+    ]
+  },
+  {
+    title: "Section 4 — Drawing Conclusions",
+    instruction: "Read the passage and answer the questions that follow.",
+    sharedPassage: "A small independent bookstore had been struggling to compete with large online retailers. In response, the owner began hosting weekly reading groups and writing workshops. Over time, the store attracted regular visitors who enjoyed discussing books with others. Within a year, the bookstore\u2019s sales increased and the shop became a popular community gathering place.",
+    questions: [
+      // Q15: correct = "helped attract more customers" → pos 3
+      { id: 15,
+        question: "What can we conclude about the bookstore\u2019s strategy?",
+        options: ["It replaced book sales", "It reduced interest in books", "It helped attract more customers", "It caused the store to close earlier"],
+        correct: 2 },
+      // Q16: correct = "To compete with online retailers" → pos 4
+      { id: 16,
+        question: "Why did the store begin hosting events?",
+        options: ["To reduce the number of books sold", "To close the store", "To avoid customers", "To compete with online retailers"],
+        correct: 3 },
+      // Q17: correct = "store built a community around reading" → pos 1
+      { id: 17,
+        question: "Why did sales increase?",
+        options: ["The store built a community around reading", "Online stores closed", "Prices decreased dramatically", "People stopped using technology"],
+        correct: 0 },
+    ]
+  },
+  {
+    title: "Section 5 — Extensive Reading",
+    instruction: "Answer both passages. Only your higher-scoring passage will count.",
+    subsections: [
+      {
+        subtitle: "Passage A — Remote Work",
+        passage: "Remote work has become increasingly common in many industries. Advances in communication technology allow employees to collaborate using video calls, shared documents, and messaging platforms. As a result, many companies now allow employees to work from home.\n\nSupporters argue that remote work reduces commuting time and improves work-life balance. However, some workers find it difficult to separate their work responsibilities from personal life.",
+        questions: [
+          // Q18: correct = "Remote work has advantages and challenges" → pos 3
+          { id: 18,
+            question: "What is the main idea?",
+            options: ["Office work is always better", "Technology eliminates communication", "Remote work has advantages and challenges", "Remote work is impossible"],
+            correct: 2 },
+          // Q19: correct = "It reduces commuting time" → pos 1
+          { id: 19,
+            question: "Why do some employees prefer remote work?",
+            options: ["It reduces commuting time", "It eliminates work", "It replaces teamwork", "It guarantees higher salaries"],
+            correct: 0 },
+          // Q20: correct = "Difficulty separating work and personal life" → pos 2
+          { id: 20,
+            question: "What challenge do remote workers face?",
+            options: ["Lack of internet", "Difficulty separating work and personal life", "Limited jobs", "Too many meetings"],
+            correct: 1 },
+        ]
+      },
+      {
+        subtitle: "Passage B — Artificial Intelligence",
+        passage: "Artificial intelligence is increasingly used to assist humans in making complex decisions. In fields such as healthcare and finance, computer systems can analyze large amounts of data much faster than humans. These systems can identify patterns and help professionals make more informed choices.\n\nHowever, experts emphasize that AI should support human decision-making rather than replace it entirely.",
+        questions: [
+          // Q21: correct = "AI assisting human decisions" → pos 3
+          { id: 21,
+            question: "What is the main topic?",
+            options: ["History of computers", "Cost of AI", "AI assisting human decisions", "Replacement of workers by computers"],
+            correct: 2 },
+          // Q22: correct = "It analyzes large amounts of data quickly" → pos 4
+          { id: 22,
+            question: "Why is AI useful?",
+            options: ["It prevents mistakes completely", "It replaces professionals", "It eliminates human thinking", "It analyzes large amounts of data quickly"],
+            correct: 3 },
+          // Q23: correct = "Algorithms may contain bias" → pos 1
+          { id: 23,
+            question: "Why should humans remain involved?",
+            options: ["Algorithms may contain bias", "AI is too expensive", "Humans dislike technology", "Computers cannot analyze data"],
+            correct: 0 },
+        ]
+      }
+    ]
+  }
+];
+
+// ── Render ──
+const container = document.getElementById("quizContainer");
+const totalQ = 23;
+let answered = 0;
+let correctCount = 0;
+const sectionScores = {};
+
+function updateProgress() {
+  const pct = (answered / totalQ) * 100;
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressLabel").textContent = `${answered} / ${totalQ}`;
+  if (answered === totalQ) showResults();
+}
+
+function handleAnswer(qId, selectedIdx, correctIdx, sectionKey) {
+  const card = document.getElementById("q-" + qId);
+  const btns = card.querySelectorAll(".option-btn");
+  const fb = card.querySelector(".feedback");
+
+  btns.forEach((b, i) => {
+    b.classList.add("locked");
+    if (i === correctIdx) b.classList.add("reveal-correct");
+    if (i === selectedIdx && selectedIdx !== correctIdx) b.classList.add("selected-wrong");
+    if (i === selectedIdx && selectedIdx === correctIdx) b.classList.add("selected-correct");
+  });
+
+  const isCorrect = selectedIdx === correctIdx;
+  if (isCorrect) {
+    fb.textContent = "Correct!";
+    fb.className = "feedback show correct";
+    card.classList.add("answered-correct");
+    correctCount++;
+  } else {
+    fb.textContent = "Incorrect — the correct answer is highlighted above.";
+    fb.className = "feedback show wrong";
+    card.classList.add("answered-wrong");
+  }
+
+  if (!sectionScores[sectionKey]) sectionScores[sectionKey] = { correct: 0, total: 0 };
+  sectionScores[sectionKey].total++;
+  if (isCorrect) sectionScores[sectionKey].correct++;
+
+  answered++;
+  updateProgress();
+}
+
+function showResults() {
+  const panel = document.getElementById("resultsPanel");
+  panel.classList.add("show");
+  const pct = Math.round((correctCount / totalQ) * 100);
+  document.getElementById("scoreDisplay").textContent = `${correctCount} / ${totalQ}`;
+  document.getElementById("scorePct").textContent = `(${pct}%)`;
+
+  // Calculate ext reading best score
+  const extA = sectionScores["ext-a"] || { correct: 0, total: 3 };
+  const extB = sectionScores["ext-b"] || { correct: 0, total: 3 };
+  const bestExt = Math.max(extA.correct, extB.correct);
+  const coreCorrect = correctCount - extA.correct - extB.correct + bestExt;
+  const coreTotal = totalQ - 3; // 20 core + best of 3
+  document.getElementById("adjustedScore").textContent = `${coreCorrect} / ${coreTotal}`;
+
+  panel.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function resetQuiz() {
+  answered = 0;
+  correctCount = 0;
+  Object.keys(sectionScores).forEach(k => delete sectionScores[k]);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function render() {
+  let html = "";
+
+  sections.forEach(sec => {
+    html += `<div class="section-banner"><h2>${sec.title}</h2><p>${sec.instruction}</p></div>`;
+
+    if (sec.sharedPassage) {
+      html += `<div class="question-card"><div class="passage-box">${sec.sharedPassage.replace(/\n/g, "<br>")}</div></div>`;
+    }
+
+    if (sec.questions) {
+      sec.questions.forEach(q => {
+        html += renderQuestion(q, sec.title);
+      });
+    }
+
+    if (sec.subsections) {
+      html += `<div class="ext-note"><strong>Note:</strong> Answer both passages below. Only your higher-scoring passage will count toward your grade.</div>`;
+      sec.subsections.forEach(sub => {
+        const sKey = sub.subtitle.includes("A") ? "ext-a" : "ext-b";
+        html += `<div class="question-card"><div style="font-weight:700;margin-bottom:10px;font-size:1.05rem;">${sub.subtitle}</div><div class="passage-box">${sub.passage.replace(/\n/g, "<br>")}</div></div>`;
+        sub.questions.forEach(q => {
+          html += renderQuestion(q, sKey);
+        });
+      });
+    }
+  });
+
+  html += `<div class="results-panel" id="resultsPanel">
+    <h2>Quiz Complete</h2>
+    <div class="score-big" id="scoreDisplay">0 / 23</div>
+    <div style="color:var(--muted);font-size:0.9rem;" id="scorePct"></div>
+    <div class="score-breakdown">
+      <div class="score-item"><div class="label">Raw Score</div><div class="val" id="rawScoreVal">&mdash;</div></div>
+      <div class="score-item"><div class="label">Adjusted (Best Ext.)</div><div class="val" id="adjustedScore">&mdash;</div></div>
+    </div>
+    <button class="reset-btn" onclick="resetQuiz()">Try Again</button>
+  </div>`;
+
+  container.innerHTML = html;
+  document.getElementById("progressFill").style.width = "0%";
+  document.getElementById("progressLabel").textContent = "0 / 23";
+}
+
+function renderQuestion(q, sectionKey) {
+  const letters = ["A", "B", "C", "D"];
+  let optHtml = "";
+  q.options.forEach((opt, i) => {
+    optHtml += `<button class="option-btn" onclick="handleAnswer(${q.id}, ${i}, ${q.correct}, '${sectionKey}')"><span class="opt-letter">${letters[i]}</span><span>${opt}</span></button>`;
+  });
+
+  return `<div class="question-card" id="q-${q.id}">
+    <div class="q-number">Question ${q.id}</div>
+    ${q.passage ? `<div class="passage-box">${q.passage}</div>` : ""}
+    <div class="q-text">${q.question}</div>
+    <div class="options">${optHtml}</div>
+    <div class="feedback"></div>
+  </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
